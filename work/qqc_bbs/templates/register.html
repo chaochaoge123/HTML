@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <script src="/static/jquery-3.3.1.js"></script>
+    <style>
+        #myimg {
+            margin-left: 10px;
+        }
+
+        #myfile {
+            display: None;
+        }
+    </style>
+    <title>注册页面</title>
+</head>
+
+<body>
+<form action="" id="form">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <h1>注册页面</h1>
+                {% csrf_token %}
+                {% for foo in form_obj %}
+                    <div class="form-group" >
+                        <label for="{{ foo.auth_id }}">{{ foo.label }}</label>
+                        {{ foo }}<span class="error pull_right"></span>
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <label for="myfile">头像
+                        <img src="\static\img\default.png" alt="" height="60" width="60" id="myimg">
+                    </label>
+                    <input type="file" id="myfile">
+                </div>
+                <div>
+                    <input id='sub_btn' type="'button" class="btn btn-danger " value="注册">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    {#显示头像流程：通过chang事件，选择文件时，取出文件路径，用新文件路径代替原来img 路径#}
+    $('#myfile').change(function () {
+        {#取到当前文件#}
+        var obj = $(this)[0].files[0]
+        {#生成filereader 对象#}
+        var read = new FileReader()
+        {#传文件读出文件路径#}
+        read.readAsDataURL(obj)
+        {#读完文件后进行操作#}
+        read.onload = function () {
+            {#alert(read.result )  文件内容#}
+            //显示所选的文件页面
+            $("#myimg").attr('src', read.result)
+        }
+    })
+
+    $('#sub_btn').click(function () {
+        var formdata = new FormData()
+        //类数组对象，取到表单内所有的信息,形式为{name:'',value:''}
+        var tt = $('#form').serializeArray()
+        //console.log(tt)
+        $.each(tt, function (index, value) {
+            //将数据加入formdata对象
+            formdata.append(value.name, value.value)
+        })
+        //加入文件
+        formdata.append('myfile', $('#myfile')[0].files[0])
+        $.ajax({
+            url: '',
+            type: 'post',
+            contentType: false,
+            processData: false,
+            data: formdata,
+            success: function (data) {
+                {#console.log(data)#}
+                if (data.user) {
+                    location.href = '/login/'
+                } else {
+                    //再输入时去除错误边框样式和错误信息
+                    $('.form-group').removeClass('has-error');
+                    $('span.error').text('');
+                    $.each(data.msg, function (index, value) {
+                        console.log(index);
+                        console.log(value);
+                        if (index=='__all__'){
+                            $("#id_re_pwd").next().text(value[0]).parent().addClass('has-error')
+                        }
+                        $("#id_" + index).next().text(value[0]).parent().addClass('has-error')
+                    })
+                }
+            }
+        })
+    })
+</script>
+
+</body>
+</html>

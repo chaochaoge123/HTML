@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div style="margin: 0 2em">
+        <div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    var xx = [];
+    var yy = [];
+      for (var i = 1; i <$('#table tr').length; i++) {
+                        xx.push(parseFloat($('#table tr').eq(i).children("td").eq(0).text().trim()));
+                        yy.push(parseFloat($('#table tr').eq(i).children("td").eq(2).text()));
+                    }
+
+
+                    console.log(xx);console.log(yy);
+       var chart;
+        chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'container',
+            type: 'line',
+            marginRight: 220,
+            marginBottom: 25
+            },
+         title: {
+            text: '指标点达成度曲线线图',
+            x: -20 //center
+            },
+          xAxis: { //X轴数据
+            categories: xx,
+            },
+          yAxis: { //Y轴显示文字
+            lineWidth: 2,
+            title: {
+                    text: '达成度'
+                   }
+           },
+           tooltip: {
+             formatter: function() {
+                   return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + Highcharts.numberFormat(this.y, 0);
+                    }
+             },
+           plotOptions: {
+                column: {
+                  dataLabels: {
+                          enabled: true
+                              },
+                     enableMouseTracking: true //是否显示title
+                         }
+                         },
+             legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'top',
+                            x: -20,
+                            y: 200,
+                            borderWidth: 2
+                      },
+              series: [{
+                     name: '达成度',
+                     data: yy
+                      }]
+            });
+        });
+
+</script>
+</body>
+</html>
